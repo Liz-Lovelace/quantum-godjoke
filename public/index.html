@@ -1,0 +1,136 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head> 
+  <meta charset="utf-8">
+  <meta name="description" content="Play a joke on god by causing more quantum decoherence than 99.999999% of other people">
+  <title>Quantum Sounds</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #progressBar {
+      width: 100%;
+      height: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #progressBar > div {
+      width: 0;
+      height: 100%;
+      background-color: #4caf50;
+      transition: width 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <button id="decohereBtn" onclick="toggleDecoherence()">DECOHERE</button>
+  <div id="progressBar"><div></div></div>
+  <h2> Events: </h2>
+  <div id='events'> </div> 
+  <h2> History: </h2>
+  <div id="history"></div>
+
+  <script>
+    const historyDiv = document.getElementById("history");
+    const eventsDiv = document.getElementById("events");
+    const decohereBtn = document.getElementById("decohereBtn");
+    const progressBar = document.getElementById("progressBar").firstElementChild;
+
+    let events = [
+      {sound: 'correct.mp3', probability: 6},
+      {sound: 'tuturu.mp3', probability: 6},
+      {sound: 'wrong.mp3', probability: 4},
+      {sound: 'peterson.mp3', probability: 2},
+      {sound: 'scary.mp3', probability: 1},
+    ]
+
+    const totalProbability = events.reduce((sum, event) => sum + event.probability, 0);
+
+    events = events.map(event => (
+      {
+        ...event,
+        probabilityPercentage: Math.round(event.probability / totalProbability * 100) + '%',
+      }
+    ))
+
+    for (let event of events) {
+      eventsDiv.innerHTML += `<p>${event.sound} probability ${event.probabilityPercentage}</p>`
+    }
+
+    async function getQuantumNumber() {
+      try {
+      const response = await fetch('/qrng');
+      const data = await response.json();
+      const byte = parseInt(data.qrn.slice(0, 2), 16);
+      return byte;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    let intervalId;
+
+    let eventPeriod = 3600 / 2
+    let progress = 0;
+    function startDecoherence() {
+      console.log('start')
+      decohereBtn.style.backgroundColor = 'red';
+      decohereBtn.textContent = 'STOP';
+
+      updateNumber()
+      
+      intervalId = setInterval(async () => {
+        progress += 100 / eventPeriod;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) {
+          progress = 0;
+          await updateNumber();
+        }
+      }, 1000);
+    }
+
+    function pauseDecoherence() {
+      decohereBtn.style.backgroundColor = 'green';
+      decohereBtn.textContent = 'DECOHERE';
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+
+    function toggleDecoherence() {
+      if (intervalId) {
+        pauseDecoherence();
+      } else {
+        startDecoherence();
+      }
+    }
+
+    async function updateNumber() {
+      const byte = await getQuantumNumber();
+      const event = getRandomEvent(byte);
+      await playSound(event.sound);
+      addToHistory(event.sound);
+    }
+
+    function getRandomEvent(byte) {
+      const randomValue = byte / 255 * totalProbability;
+
+      let cumulativeProbability = 0;
+      for (const event of events) {
+        cumulativeProbability += event.probability;
+        if (randomValue <= cumulativeProbability) {
+          return event;
+        }
+      }
+    }
+
+    function addToHistory(str) {
+      historyDiv.innerHTML = `<p>${str}</p>${historyDiv.innerHTML}`
+    }
+
+    async function playSound(soundFile) {
+      const audio = new Audio(`sounds/${soundFile}`);
+      await audio.play();
+    }
+  </script>
+</body>
+</html>
