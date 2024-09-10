@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-godjoke
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quantum-godjoke
+  template:
+    metadata:
+      labels:
+        app: quantum-godjoke
+    spec:
+      containers:
+      - name: quantum-godjoke
+        image: lizlovelace/quantum-godjoke
+        ports:
+        - containerPort: 3921

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-godjoke
+spec:
+  selector:
+    app: quantum-godjoke
+  ports:
+  - port: 3921
+    targetPort: 3921
+  type: NodePort

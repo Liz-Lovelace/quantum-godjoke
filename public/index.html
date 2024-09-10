@@ -4,44 +4,179 @@
   <meta charset="utf-8">
   <meta name="description" content="Play a joke on god by causing more quantum decoherence than 99.999999% of other people">
   <title>Quantum Sounds</title>
+  <link rel="icon" href="https://fav.farm/🔊" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+    body {
+      --black: #121212;
+      --accent: #900095;
+      --bright-accent: #f600ff;
+      background-color: var(--black);
+      color: #f0f0f0;
+      text-align: left;
+      font-family: "Open Sans", sans-serif;
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 50rem;
+      margin: auto;
+        padding: 0.2rem;
+    }
+
+    button {
+      font-weight: bold;
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--bright-accent);
+    }
+
+    a:visited {
+      color: var(--bright-accent);
+    }
+
+    #decohereBtn {
+      background-color: var(--accent);
+      border: 3px solid var(--accent);
+      color: white;
+      padding: 20px 40px;
+      font-size: 24px;
+      cursor: pointer;
+      margin: 20px auto;
+      display: block;
+      min-width: 9em;
+    }
+
     #progressBar {
       width: 100%;
       height: 20px;
-      background-color: #f0f0f0;
-      border-radius: 10px;
+      background-color: #333;
       overflow: hidden;
+      margin: 0 auto;
     }
 
     #progressBar > div {
       width: 0;
       height: 100%;
-      background-color: #4caf50;
+      background-color: var(--accent);
       transition: width 0.5s;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 40px;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+
+    th {
+      background-color: #222;
+    }
+
+
+    .explainer {
+      max-width: min(100%, 40rem);
+      margin: auto;
+      display: block;
+      height: auto;
+    }
+
+    ul {
+      list-style-type: square;
+      padding-left: 15px;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    .play-btn {
+      background-color: var(--accent);
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+    }
+
+    .play-btn:before {
+      content: "▶";
     }
   </style>
 </head>
 <body>
-  <button id="decohereBtn" onclick="toggleDecoherence()">DECOHERE</button>
-  <div id="progressBar"><div></div></div>
-  <h2> Events: </h2>
-  <div id='events'> </div> 
-  <h2> History: </h2>
-  <div id="history"></div>
+  <h1> The Quantum Decoherence Generator </h1>
+  <main>
+    <div id="progressBar"><div></div></div>
+    <button id="decohereBtn" onclick="toggleDecoherence()">DECOHERE</button>
+
+    <h2>How does this work?</h2>
+    <p>Click the big purple button! Every <span id="eventPeriodDisplay"></span> minutes, this website will get a quantum-random number from <a href='https://www.lfdr.de/QRNG/'>lfdr.de/QRNG</a> and use that to play a random sound.</p>
+
+    <h2>Why?</h2>
+    <p>Since the randomness comes from a quantum generator, the timeline will be split and you will experience a different sound being played in different worlds. The sounds will influence you in a different way in every world and cause you to perform slightly different actions. Doing this repeatedly means that from a god's perspective you would differ much more than other people between different quantum worlds. Why do it? Because it's funny!</p>
+
+    <p>Here's an image to help you wrap your head around it:</p>
+    <img class="explainer" src="explainer.jpg" alt="Explainer Image">
+
+    <h2>Pro Tips:</h2>
+    <ul>
+      <li>Click the big purple button!</li>
+      <li>If you want to get a new quantum random sound without having to wait, just double-click the big purple button</li>
+      <li>Try to do actually different things depending on what sound you hear, or else the effect would be small</li>
+      <li>If you want an actually good explanation, go read the essay <a href="https://www.lesswrong.com/s/Kqs6GR7F5xziuSyGZ/p/qcYCAxYZT4Xp9iMZY">Living in Many Worlds</a> by Eliezer Yudkowsky</li>
+      <li>No you can't actually tell it's working. But it is.</li>
+      <li>If someone helpfully volunteers that quantum collapse is the consensus interpretation of quantum mechanics, send them <a href="https://www.lesswrong.com/s/Kqs6GR7F5xziuSyGZ/p/S8ysHqeRGuySPttrS">this essay</a> (tl;dr - many-worlds interpretation is correct and everyone else is wrong)</li>
+    </ul>
+
+    <h2> Possible sounds: </h2>
+    <table id='events'>
+      <tr>
+        <th>Title</th>
+        <th>Probability</th>
+        <th>Listen</th> 
+      </tr>
+    </table> 
+
+    <p style="text-align: center;"> Made by <a href="https://liz-lovelace.com">Liz Lovelace</a>, code on <a href="https://github.com/Liz-Lovelace/quantum-godjoke">github</a> </p>
+  </main>
 
   <script>
-    const historyDiv = document.getElementById("history");
-    const eventsDiv = document.getElementById("events");
+    const eventsTable = document.getElementById("events");
     const decohereBtn = document.getElementById("decohereBtn");
     const progressBar = document.getElementById("progressBar").firstElementChild;
+    const eventPeriodDisplay = document.getElementById("eventPeriodDisplay");
 
     let events = [
-      {sound: 'correct.mp3', probability: 6},
-      {sound: 'tuturu.mp3', probability: 6},
-      {sound: 'wrong.mp3', probability: 4},
-      {sound: 'peterson.mp3', probability: 2},
-      {sound: 'scary.mp3', probability: 1},
+      {title: 'Correct', sound: 'correct.mp3', probability: 6},
+      {title: 'Tuturu', sound: 'tuturu.mp3', probability: 6},
+      {title: 'Wrong', sound: 'wrong.mp3', probability: 4},
+      {title: 'no no no no no no no no no', sound: 'nonono.mp3', probability: 2},
+      {title: 'Jordan Peterson says "Don\'t be a slave to stupid rules"', sound: 'peterson.mp3', probability: 2},
+      {title: 'Northernlion says "If you lock in you can do anything"', sound: 'if-you-lock-in-you-can-do-anything.mp3', probability: 2},
+      {title: 'This one is scary', sound: 'scary.mp3', probability: 1},
     ]
 
     const totalProbability = events.reduce((sum, event) => sum + event.probability, 0);
@@ -54,7 +189,13 @@
     ))
 
     for (let event of events) {
-      eventsDiv.innerHTML += `<p>${event.sound} probability ${event.probabilityPercentage}</p>`
+      eventsTable.innerHTML += `
+        <tr>
+          <td>${event.title}</td>
+          <td>${event.probabilityPercentage}</td>
+          <td><button class="play-btn" onclick="playSound('${event.sound}')"></button></td>
+        </tr>
+      `;
     }
 
     async function getQuantumNumber() {
@@ -72,9 +213,12 @@
 
     let eventPeriod = 3600 / 2
     let progress = 0;
+
+    eventPeriodDisplay.textContent = eventPeriod / 60;
+
     function startDecoherence() {
       console.log('start')
-      decohereBtn.style.backgroundColor = 'red';
+      decohereBtn.style.backgroundColor = 'var(--black)';
       decohereBtn.textContent = 'STOP';
 
       updateNumber()
@@ -90,7 +234,7 @@
     }
 
     function pauseDecoherence() {
-      decohereBtn.style.backgroundColor = 'green';
+      decohereBtn.style.backgroundColor = 'var(--accent)';
       decohereBtn.textContent = 'DECOHERE';
       clearInterval(intervalId);
       intervalId = null;
@@ -107,8 +251,8 @@
     async function updateNumber() {
       const byte = await getQuantumNumber();
       const event = getRandomEvent(byte);
+      console.log(event)
       await playSound(event.sound);
-      addToHistory(event.sound);
     }
 
     function getRandomEvent(byte) {
@@ -121,10 +265,6 @@
           return event;
         }
       }
-    }
-
-    function addToHistory(str) {
-      historyDiv.innerHTML = `<p>${str}</p>${historyDiv.innerHTML}`
     }
 
     async function playSound(soundFile) {
